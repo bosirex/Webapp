@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <style>
+        body {
+            border: 2px solid #ddd; /* Border around the entire page */
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .left-column {
+            flex: 1; /* Equal-width left column */
+            padding: 10px;
+            border: 2px solid #ddd; /* Border around the left column */
+        }
+
+        .right-column {
+            flex: 2; /* Double-width right column */
+            padding: 10px;
+        }
+
+        .image-container {
+            text-align: center;
+            border: 2px solid #ddd; /* Border around the image container */
+            padding: 10px;
+        }
+
+        img {
+            max-width: 100%;
+            border: 2px solid #ddd; /* Border around the image */
+        }
+    </style>
+</head>
+<body>
+    <h2>User Registration</h2>
+    <div class="container">
+        <div class="left-column">
+            <div class="image-container">
+                <img src="{% static 'images/204989-200.png' %}" alt="Sample Image">
+            </div>
+        </div>
+        <div class="right-column">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.username.label_tag }} {{ form.username }}
+                {{ form.email.label_tag }} {{ form.email }}
+                {{ form.first_name.label_tag }} {{ form.first_name }}
+                {{ form.last_name.label_tag }} {{ form.last_name }}
+
+                <!-- New fields added to the form -->
+                {{ form.picture.label_tag }} {{ form.picture }}
+                {{ form.address.label_tag }} {{ form.address }}
+                {{ form.license.label_tag }} {{ form.license }}
+
+                {{ form.password1.label_tag }} {{ form.password1 }}
+                {{ form.password2.label_tag }} {{ form.password2 }}
+
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

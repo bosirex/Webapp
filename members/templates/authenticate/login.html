@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .clickable-text {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Left Column: Form -->
+        <div class="col-md-6">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <h1 class="text-center mb-4">Login</h1>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" name="username" aria-describedby="usernameHelp">
+                </div>
+                <div class="form-group mt-3">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password">
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+            <br>
+            {% if user.is_authenticated %}
+                You are logged in. <a href="{% url 'home' %}" class="clickable-text">Click here</a> to go to the home page.
+            {% else %}
+                You do not have an account. <a href="{% url 'register_user' %}" class="clickable-text">Register</a>
+            {% endif %}
+        </div>
+        {% load static %}
+        <!-- Right Column: Image -->
+        <div class="col-md-6">
+    <img src="{% static 'mapapp/images/sol.png' %}" alt="Image" class="img-fluid">
+</div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

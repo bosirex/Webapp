@@ -1,0 +1,337 @@
+<head>
+    <title>Markers</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!--leaflet css-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Boot Strap -->
+
+    <style>
+        /* Navigation Bar */
+        .side-nav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 20px;
+        }
+
+        .side-nav a {
+            padding: 10px 15px 10px 30px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .side-nav a:hover {
+            color: #f1f1f1;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 260px; /* Same as the width of the side-nav */
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 20px;
+        }
+
+        .block {
+            flex: 1;
+            margin: 0 10px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .scrollable {
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        button {
+            cursor: pointer;
+        }
+        * Custom marker icon styles */
+
+          .custom-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            border: 2px solid #333;
+            background-color: #fff;
+        }
+
+        .marker-icon {
+            width: 20px;
+            height: 20px;
+        }
+        /* Map Container */
+        .map-container {
+            margin-left: 260px;
+            border: 1px solid #ddd;
+            position: absolute;
+            top: calc(100vh - 60% - 75px);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f4f4f4;
+        }
+
+        #map1 {
+            width: 100%;
+            height: 100%;
+        }
+        <style>
+    /* Custom marker icon styles */
+    .custom-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        border: 2px solid #333;
+        background-color: #fff;
+    }
+
+    .marker-icon {
+        width: 20px;
+        height: 20px;
+    }
+</style>
+
+
+</head>
+
+<body>
+    <!-- Left Side Navigation -->
+    <div class="side-nav">
+        <a href="{% url 'status_update' %}">Status</a>
+        <a href="#">Gators</a>
+        <a href="{% url 'create_employee' %}">Create Employee</a>
+
+            <a class ="nav-link" href="{% url 'manuel_manage_incident' %}">Alerts</a>
+
+
+        <a href="#">Button 5</a>
+        <a href="#">Button 6</a>
+        <a href="#">Button 7</a>
+    </div>
+
+    <!-- Main Content -->
+      <div class="main-content">
+        <div class="container">
+            <div class="btn-group btn-group-lg">
+             </a>
+                <a href="{% url 'indextwo' %}" class="btn btn-primary">Whole View</a>
+                <a href="{% url 'index' %}" class="btn btn-primary">Split View</a>
+                <a href="{% url 'icviews' %}" class="btn btn-primary">Incident View</a>
+                <button type="button" class="btn btn-primary" href="{% url 'indextwo' %}">Incident Only</button>
+                <button type="button" class="btn btn-primary">Active Incidents</button>
+                <button type="button" class="btn btn-primary">Samsung</button>
+                <button type="button" class="btn btn-primary">Sony</button>
+            </div>
+</div>
+        </div>
+    <br>
+
+
+
+
+            <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get all buttons with class 'change-status'
+        const changeStatusButtons = document.querySelectorAll(".change-status");
+
+        // Add an event listener to each button
+        changeStatusButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                // Open incidents.html in a new window/tab
+                window.open('/mapapp/incidents_view/', '_blank');
+            });
+        });
+    });
+</script>
+
+        <!-- ... your other HTML content ... -->
+
+
+{% load static %}
+<div class="map-container">
+    <h1><center>Responders Status & Current Active Incidents</center></h1>
+    <div id="map1"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var existingMarkers1 = {};
+        var existingMarkers2 = {};
+
+        function initializeMap(mapId) {
+            var map = L.map(mapId, {
+                center: [39.4984392, -76.6555271],
+                zoom: 15.5,
+                /* other map configurations here... */
+            });
+
+            L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            }).addTo(map);
+
+            return map;
+        }
+
+        function createCustomIcon(options) {
+            var colorsList = ['medical', 'inc', 'spill', 'other', 'red', 'green', 'orange', 'yellow', 'purple', 'darkred', 'darkblue', 'darkgreen', 'cadetblue', 'darkpurple', 'white', 'black', 'gray', 'blue', 'violet', 'gold'];
+            var iconUrl = "{% static 'mapapp/img/marker-icon-2x-' %}" + options.markerColor + ".png";
+
+            if (!colorsList.includes(options.markerColor)) {
+                iconUrl = "{% static 'mapapp/img/marker-icon-2x-gray.png' %}";
+            }
+
+            var icon = L.icon({
+                iconUrl: iconUrl,
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowUrl: "{% static 'mapapp/img/marker-shadow.png' %}",
+                shadowSize: [41, 41]
+            });
+
+            return icon;
+        }
+
+        function getMarkerColorMap1(status) {
+            switch (status) {
+                case 'oos':
+                    return 'orange';
+                case 'responding':
+                    return 'yellow';
+                case 'location':
+                    return 'red';
+                case 'In Service':
+                    return 'violet';
+                case 'clear':
+                    return 'blue';
+                case 'Signal 99':
+                    return 'black';
+                default:
+                    return 'gold';
+            }
+        }
+
+        function getMarkerColorMap2(category) {
+            switch (category) {
+                case 'medical':
+                    return 'medical';
+                case 'security':
+                    return 'inc';
+                case 'spill':
+                    return 'spill';
+                case 'other':
+                    return 'other';
+                default:
+                    return 'other';
+            }
+        }
+
+        async function fetchDataAndUpdateMap1() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/mapapp/api/credentials/');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                data.forEach(markerData => {
+                    var color = getMarkerColorMap1(markerData.status);
+                    var customIcon = createCustomIcon({ markerColor: color });
+
+                    if (existingMarkers1[markerData.username]) {
+                        existingMarkers1[markerData.username].setLatLng([markerData.latitude, markerData.longitude]);
+                        existingMarkers1[markerData.username].setIcon(customIcon);
+                        existingMarkers1[markerData.username].setPopupContent(markerData.username + ":" + markerData.status);
+                    } else {
+                        var marker = L.marker([markerData.latitude, markerData.longitude], { icon: customIcon })
+                            .bindPopup(markerData.username + ":" + markerData.status)
+                            .addTo(map1);
+                        existingMarkers1[markerData.username] = marker;
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching markers for map1:', error);
+            }
+        }
+
+        async function fetchDataAndUpdateMap2() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/mapapp/api/need_help_list/');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                data.forEach(markerData => {
+                    var color = getMarkerColorMap2(markerData.category);
+                    var customIcon = createCustomIcon({ markerColor: color });
+
+                    if (existingMarkers2[markerData.username]) {
+                        existingMarkers2[markerData.username].setLatLng([markerData.latitude, markerData.longitude]);
+                        existingMarkers2[markerData.username].setIcon(customIcon);
+                        existingMarkers2[markerData.username].setPopupContent(markerData.username + ":" + markerData.category);
+                    } else {
+                        var marker = L.marker([markerData.latitude, markerData.longitude], { icon: customIcon })
+                            .bindPopup(markerData.username + ":" + markerData.category)
+                            .addTo(map1);
+                        existingMarkers2[markerData.username] = marker;
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching markers for map2:', error);
+            }
+        }
+
+        var map1 = initializeMap('map1');
+
+        async function updateMapsInOrder() {
+            await fetchDataAndUpdateMap1();
+            fetchDataAndUpdateMap2();
+        }
+
+        updateMapsInOrder();
+        setInterval(updateMapsInOrder, 7000);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Markers</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!--leaflet css-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Boot Strap -->
+
+    <style>
+        /* Navigation Bar */
+        .side-nav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 20px;
+        }
+
+        .side-nav a {
+            padding: 10px 15px 10px 30px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .side-nav a:hover {
+            color: #f1f1f1;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 260px;
+            /* Same as the width of the side-nav */
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            padding: 20px;
+        }
+
+        .block {
+            flex: 1;
+            margin: 0 10px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .scrollable {
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* Custom marker icon styles */
+        .custom-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            border: 2px solid #333;
+            background-color: #fff;
+        }
+
+        .marker-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Map Container */
+        .map-container {
+            margin-left: 260px;
+            border: 1px solid #ddd;
+            position: absolute;
+            top: calc(100vh - 60% - 75px);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f4f4f4;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Left Side Navigation -->
+    <div class="side-nav">
+        <a href="{% url 'status_update' %}">Status</a>
+        <a href="#">Gators</a>
+        <a href="{% url 'create_employee' %}">Create Employee</a>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'manuel_manage_incident' %}">Alerts</a>
+        </li>
+        <a href="#">Button 5</a>
+        <a href="#">Button 6</a>
+        <a href="#">Button 7</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="btn-group btn-group-lg">
+                <button type="button" class="btn btn-primary">Apple</button>
+                <button type="button" class="btn btn-primary">Samsung</button>
+                <button type="button" class="btn btn-primary">Sony</button>
+                <button type="button" class="btn btn-primary">Apple</button>
+                <button type="button" class="btn btn-primary">Samsung</button>
+                <button type="button" class="btn btn-primary">Sony</button>
+            </div>
+        </div>
+
+        <h1>Markers </h1>
+
+        <div class="container">
+            <div class="block" id="ems">
+                EMS
+                <div class="scrollable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Unit ID</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td>12345</td>
+                                <td>Active</td>
+                                <td><button class="change-status">Change Status</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Get all buttons with class 'change-status'
+                    const changeStatusButtons = document.querySelectorAll(".change-status");
+
+                    // Add an event listener to each button
+                    changeStatusButtons.forEach(button => {
+                        button.addEventListener("click", function () {
+                            // Open incidents.html in a new window/tab
+                            window.open('/mapapp/incidents_view/', '_blank');
+                        });
+                    });
+                });
+            </script>
+
+            <div class="block" id="security">
+                Security
+                <div class="scrollable">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Unit ID</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td>12345</td>
+                                <td>Active</td>
+                                <td><button class="change-status">Change Status</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Map Container -->
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your New Function -->
+    <script>
+        function newFunction() {
+            console.log("New function was called!");
+        }
+    </script>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (event) {
+            // Your map initialization and other scripts can go here
+        });
+    </script>
+</body>
+
+</html>

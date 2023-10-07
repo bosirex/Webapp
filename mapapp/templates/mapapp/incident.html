@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <h1>Status Update</h1>
+  </head>
+  <body>
+    <h1><center>EMS</center></h1>
+    <table class="table table-md table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Unit</th>
+          <th scope="col">Status</th>
+          <th scope="col">Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for credential in credentials_data %}
+        <tr>
+          <td>{{ credential.username }}</td>
+          {% if credential.status == "Signal 99" %}
+          <td class="bg-danger">{{ credential.status }},  {{ credential.username }}</td>
+          {% else %}
+          <td>{{ credential.status }}</td>
+          {% endif %}
+          <td>{{ credential.timestamp }}</td>
+        </tr>
+         <th scope="row">1</th>
+      <td>5121776</td>
+      <td>EMS7</td>
+      <td>Lat & Long(marker)</td>
+
+
+    </tr>
+    <tr>
+       <th scope="row">2</th>
+      <td>5121777</td>
+      <td>EMS3</td>
+      <
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>5121778</td>
+      <td>EMS1</td>
+      <td>Lat & Long(marker)</td>
+
+    </tr>
+  </tbody>
+</table>
+        {% endfor %}
+      </tbody>
+    </table>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+<h1><bold><center>Incidents</center></bold></h1>
+<table class="table table-md table-hover table-bordered">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Incident #</th>
+      <th scope="col">Handled by ID</th>
+      <th scope="col">Location</th>
+      <th scope="col">Type</th>
+      <th scope="col">start Time</th>
+      <th scope="col">resolved Time</th>
+      <th scope="col">Transport</th>
+      <th scope="col">Action</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>5121776</td>
+      <td>EMS7</td>
+      <td>Lat & Long(marker)</td>
+       <td>fall</td>
+      <td>1709</td>
+      <td>1818</td>
+       <td>None</td>
+      <td><button class="add-marker" data-incident="5121776">Add Marker</button></td>
+    </tr>
+    <tr>
+       <th scope="row">2</th>
+      <td>5121777</td>
+      <td>EMS3</td>
+      <td>Lat & Long(marker)</td>
+       <td>Unknown</td>
+      <td>1732</td>
+      <td>1800</td>
+       <td>None</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>5121778</td>
+      <td>EMS1</td>
+      <td>Lat & Long(marker)</td>
+       <td>OD</td>
+      <td>1754</td>
+      <td>1832</td>
+       <td>204</td>
+    </tr>
+  </tbody>
+</table>

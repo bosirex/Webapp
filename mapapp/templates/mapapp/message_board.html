@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -5px; /* Counteract the margin for columns */
+        }
+
+        .column {
+            flex: 1; /* This makes sure the columns take equal space */
+            max-width: calc(33.33% - 10px); /* Subtract margins */
+            box-sizing: border-box;
+            border: 2px solid white; /* White border */
+            background-color: #aaa;
+            margin: 5px; /* Space between columns */
+            padding: 10px;
+            height: auto; /* Adjust based on content */
+        }
+
+        .message {
+            border-top: 1px solid white;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1><center>Message Board</center></h1>
+
+    <div class="row">
+        {% for user in users %}
+        <div class="column">
+            <h2>{{ user.username }}</h2>
+            <p>incoming messages..</p>
+
+            <!-- Display messages for the current user -->
+            {% for message in user.messages %}
+            <div class="message">
+                <h3>{{ message.subject }}</h3>
+                <p>{{ message.data }}</p>
+            </div>
+            {% endfor %}
+
+            <button class="btn btn-primary send-btn">SEND</button>
+        </div>
+
+        {% if forloop.counter|divisibleby:3 and not forloop.last %}
+    </div>
+    <div class="row">
+        {% endif %}
+        {% endfor %}
+    </div>
+</body>
+
+</html>
