@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ePCR Form</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        #etoh {
+  padding-right: 50px;
+  font-size: 16px;}
+        #etoh1 {
+  padding-left: 15px;
+  font-size: 16px;}
+
+
+  #signature {
+            height: 150px; /* Adjust the height as needed */
+        }
+
+
+        /* button css formatting */
+        .column-content {
+            /* Styling for content inside columns if needed */
+            padding: 10px; /* Example padding */
+            border: 1px solid #ddd; /* Example border */
+            margin-top: 10px; /* Example margin */
+        }
+
+
+
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>EPCR Form</h1>
+    <form id="epcr-form" method="post" class="form">
+        {% csrf_token %}
+
+        <div class="row mb-3">
+            <!-- Add this inside your <form> element where you want the dropdown to appear -->
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="venue" class="form-label">Select Venue</label>
+                    <select name="venue" id="venue" class="form-select" required>
+                        {% for venue in venues %}
+                        <option value="{{ venue.id }}">{{ venue.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- ... (existing HTML after the dropdown) -->
+            <br /><br />
+            <div class="col-3">
+                <label for="incident_number" class="form-label">Incident Number</label>
+                <input type="text" name="incident_number" id="incident_number" class="form-control" required>
+            </div>
+            <div class="col">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" name="first_name" id="first_name" class="form-control" required>
+            </div>
+            <div class="col">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" name="last_name" id="last_name" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-3">
+                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                <input type="text" name="date_of_birth" id="date_of_birth" class="form-control datepicker" required>
+            </div>
+            <div class="col">
+                <label for="gender" class="form-label">Gender</label>
+                <select name="gender" id="gender" class="form-select" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="medical_history" class="form-label">Medical History</label>
+                <textarea name="medical_history" id="medical_history" class="form-control"></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-4">
+                <label for="incident" class="form-label">Incident</label>
+                <input type="text" name="incident" id="incident" class="form-control" required>
+            </div>
+            <div class="col">
+                <label for="responding_unit" class="form-label">Responding Unit</label>
+                <input type="text" name="responding_unit" id="responding_unit" class="form-control" required>
+            </div>
+            <div class="col">
+                <label for="personnel" class="form-label">Personnel</label>
+                <input type="text" name="personnel" id="personnel" class="form-control" required>
+            </div>
+        </div>
+
+        <hr>
+
+        <h1 class="text-center">Narrative</h1>
+
+        <div class="mb-3">
+            <label for="assessment_findings" class="form-label">Assessment Findings</label>
+            <textarea name="assessment_findings" id="assessment_findings" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="treatments" class="form-label">Treatments</label>
+            <textarea name="treatments" id="treatments" class="form-control"></textarea>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label for="outcome" class="form-label">Outcome</label>
+                <textarea name="outcome" id="outcome" class="form-control" required></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="row align-items-center">
+                <div class="col-2">
+                    <label for="alcohol" class="form-label" id="etoh">Alcohol</label>
+                </div>
+                <div class="col">
+                    <div class="form-check form-check-inline" id="etoh1">
+                        <input class="form-check-input" type="checkbox" id="alcoholYes" value="yes" name="alcohol">
+                        <label class="form-check-label" for="alcoholYes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline" id="etoh2">
+                        <input class="form-check-input" type="checkbox" id="alcoholNo" value="no" name="alcohol">
+                        <label class="form-check-label" for="alcoholNo">No</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <label for="overdose" class="form-label">Overdose</label>
+                <select name="overdose" id="overdose" class="form-select">
+                    <option value="Yes">None</option>
+                    <option value="Herion">"Herion</option>
+                    <option value="Fentenayl">Fentenayl</option>
+                    <option value="Cocaine">Cocaine</option>
+                    <option value="MDMA">MDMA</option>
+                    <option value="Crystal Meth">Crystal Meth</option>
+                    <option value="Krokadile">Krokadile</option>
+                    <option value="Ecstacy">Ecstacy</option>
+                    <option value="Ecstacy">Other</option>
+
+
+                </select>
+            </div>
+            <div class="col">
+                <a href="{% url 'overdose_form' %}" class="btn btn-link">Go to Overdose Form</a>
+            </div>
+        </div>
+        <div class="col">
+                <label for="signature" class="form-label">Signature</label>
+                <input type="text" class="form-control" id="signature" name="signature" required>
+            </div>
+   <div class="container mt-3">
+        <div class="row">
+            <!-- Column for the first button -->
+            <div class="col text-center">
+                <button type="button" class="btn btn-primary">Edit</button>
+            </div>
+            <!-- Column for the second button -->
+            <div class="col text-center">
+                <button type="button" class="btn btn-secondary">Save</button>
+            </div>
+            <!-- Column for the third button -->
+            <div class="col text-center">
+                <button type="button" class="btn btn-success">PrintPDF</button>
+            </div>
+        </div>
+    </div>
+    </form>
+
+</div>
+<!-- ... (existing HTML before the dropdown) -->
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+        $(document).ready(function () {
+            $('#date_of_birth').datepicker();
+            $('#epcr-form').on('submit', function (event) {
+                event.preventDefault();
+                // POST data to the backend
+                $.ajax({
+                    url: '{}',
+                    type: 'POST',
+                    data: $('#epcr-form').serialize(),
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    },
+                });
+            });
+
+            $('#edit-button').on('click', function () {
+                // Fetch data from the backend and populate the form
+                const incidentNumber = prompt('Enter the incident number:');
+                $.ajax({
+                    url: '{}',
+                    type: 'GET',
+                    data: { incident_number: incidentNumber },
+                    success: function (response) {
+                        console.log(response);
+                        // Populate the form with the response data
+                        $('#incident_number').val(response.incident_number);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    },
+                });
+            });
+        });
+        // generate venue name
+
+    document.getElementById('print-button').addEventListener('click', function() {
+        var venueId = document.getElementById('venue').value; // Get the selected venue ID
+        var url = `/pdf_app/generate_pdf/?venue_id=${venueId}`; // Generate the URL for the PDF
+        window.open(url, '_blank'); // Open the PDF in a new window/tab
+    });
+
+</script>
+</body>
+
+</html>

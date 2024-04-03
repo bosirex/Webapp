@@ -17,7 +17,7 @@ class Credential(models.Model):
 class Incidents(models.Model):
     UUID = models.CharField(max_length=255, unique=True)  # set as primary key
     UUID_Serial = models.CharField(max_length=250, null=True, blank=True)
-    incident_number = models.CharField(max_length=100)
+    incident_number = models.CharField(max_length=100, unique=True)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     seating = models.CharField(max_length=100, null=True, blank=True)
@@ -74,10 +74,21 @@ class Message(models.Model):
     def __str__(self):
         return f"Message from {self.sender.username} to {self.receiver.username} at {self.timestamp}"
 #send message
-class SimpleMessage(models.Model):
-    username = models.CharField(max_length=100)
-    subject = models.CharField(max_length=100, blank=True, null=True)
-    data = models.CharField(max_length=172)
+
+
+
+class VenueName(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=200,blank=True)
+    city = models.CharField(max_length=50, blank=True)
+    state = models.CharField(max_length=2, blank=True)
+    capacity = models.PositiveIntegerField(default=0)
+    latitude = models.FloatField(null=True, blank=True, default=None)
+    longitude = models.FloatField(null=True, blank=True, default=None)
 
     def __str__(self):
-        return self.username
+        return self.name
+
+
+
+

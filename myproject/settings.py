@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,6 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['10.0.2.2', '127.0.0.1', 'localhost']
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,8 +45,25 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "api",
-
+    'simplemessageapp',
+    'ePCR',
+    'channels',
+    'lost_kid',
+    'pdf',
 ]
+
+ASGI_APPLICATION = "myproject.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
+
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -63,7 +81,7 @@ ROOT_URLCONF = "myproject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -76,7 +94,17 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "myproject.wsgi.application"
+ASGI_APPLICATION = "myproject.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
+
 
 
 # Database
@@ -119,6 +147,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "/static/"
+#STATICFILES_DIRS = [BASE_DIR / "static"]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

@@ -1,0 +1,110 @@
+<!-- epcrform.html -->
+<!-- epcrform.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ePCR Form</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>EPCR Form</h1>
+        <form id="epcr-form" method="post" class="form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="patient" class="form-label">Patient</label>
+                <select name="patient" id="patient" class="form-select" required>
+                    {% for patient in Patient.objects.all %}
+                        <option value="{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="incident" class="form-label">Incident</label>
+                <select name="incident" id="incident" class="form-select" required>
+                    {% for incident in Incident.objects.all %}
+                        <option value="{{ incident.id }}">{{ incident.incident_type }} - {{ incident.location }} - {{ incident.date }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="responding_unit" class="form-label">Responding Unit</label>
+                <input type="text" name="responding_unit" id="responding_unit" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="personnel" class="form-label">Personnel</label>
+                <select name="personnel" id="personnel" class="form-select" multiple required>
+                    {% for personnel in Personnel.objects.all %}
+                        <option value="{{ personnel.id }}">{{ personnel.first_name }} {{ personnel.last_name }} - {{ personnel.role }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="assessment_findings" class="form-label">Assessment Findings</label>
+                <textarea name="assessment_findings" id="assessment_findings" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="treatments" class="form-label">Treatments</label>
+                <textarea name="treatments" id="treatments" class="form-control"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="outcome" class="form-label">Outcome</label>
+                <input type="text" name="outcome" id="outcome" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+        <button id="edit-button" class="btn btn-secondary">Edit</button>
+        <a href="#" class="btn btn-link">Go to Overdose Form</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#epcr-form').on('submit', function (event) {
+                event.preventDefault();
+                // POST data to the backend
+                $.ajax({
+                    url: '{}',
+                    type: 'POST',
+                    data: $('#epcr-form').serialize(),
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    },
+                });
+            });
+
+            $('#edit-button').on('click', function () {
+                // Fetch data from the backend and populate the form
+                const incidentNumber = prompt('Enter the incident number:');
+                $.ajax({
+                    url: '{}',
+                    type: 'GET',
+                    data: {incident_number: incidentNumber},
+                    success: function (response) {
+                        console.log(response);
+                        // Populate the form with the response data
+                        $('#incident_number').val(response.incident_number);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    },
+                });
+            });
+        });
+    </script>
+</body>
+</html>

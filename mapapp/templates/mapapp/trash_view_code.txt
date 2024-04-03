@@ -1,0 +1,55 @@
+'''
+def login_user(request):
+    user = None  # Initialize user variable
+
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+
+    if user is not None:
+        login(request, user)
+        return redirect('index')
+    else:
+        messages.success(request, ("There was an error Try again"))
+        #return render(request, 'your_template_name_here.html')  # Return a response even for non-POST requests
+
+def register_user(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            messages.success(request,("Registration Successful"))
+
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'mapapp/register_user.html',
+                  {'form': form,})
+
+ '''def status_update(request):
+    credentials_data = Credential.objects.all()
+    context = {'credentials_data': credentials_data}
+    return render(request, 'mapapp/status_update_views.html', context)'''
+
+    '''def home(request):
+    # status update
+    credentials_data = Credential.objects.all()
+    context = {'credentials_data': credentials_data}
+
+    total_responders = Credential.objects.all().count()
+    context['total_responders'] = total_responders
+
+    assignments_data = Assignment.objects.all()
+    return render(request, 'mapapp/home.html', {'assignments_data': assignments_data})
+
+    return render(request, 'mapapp/home.html', context)'''
+
+    '''def credential_count(request):
+    total_responders = Credential.objects.all().count()
+    context = {'total_responders': total_responders}
+    return render(request, 'mapapp/home.html', context)'''

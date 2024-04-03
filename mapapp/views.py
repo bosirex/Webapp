@@ -1,29 +1,36 @@
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from .models import Credential, Incidents, needHelp
-from .serializers import CredentialSerializer, StatusUpdateSerializer, IncidentSerializer,NeedHelpSerializer
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated  # Example permission
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from django.http import HttpResponseRedirect, JsonResponse
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
+
+from simplemessageapp.models import SimpleMessage
+from mapapp.models import Credential
+
+
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
-from .models import needHelp
-from .serializers import NeedHelpSerializer
-from django.shortcuts import render, redirect
+from rest_framework.views import APIView
+
+from .models import (Credential, Incidents, needHelp, Assignment)
 from .forms import IncidentReportForm
-from django.http import JsonResponse
+from .serializers import (
+    CredentialSerializer, StatusUpdateSerializer, IncidentSerializer,
+    NeedHelpSerializer, MessageSerializer,
+)
+from django.shortcuts import render
+from django.http import StreamingHttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import threading
 import math
-from .models import Credential, needHelp, Assignment  # Adjust the import as per your project structure
-from django.utils import timezone
-
-
-
+import json
 
 ###Dispatch Controls###
 
@@ -93,18 +100,23 @@ def text_comm_view(request):
     return render(request, 'home.html', context)
 
 
-'''def home(request):
-    # status update
-    credentials_data = Credential.objects.all()
-    context = {'credentials_data': credentials_data}
 
-    total_responders = Credential.objects.all().count()
-    context['total_responders'] = total_responders
+#get assignment
 
-    assignments_data = Assignment.objects.all()
-    return render(request, 'mapapp/home.html', {'assignments_data': assignments_data})
+@api_view(['GET'])
+def fetch_assignment(request, username):
+    try:
+        user_assignment = Assignment.objects.get(responder__username=username)
+        return JsonResponse({
+            'isAssigned': True,
+            'latitude': user_assignment.incident.latitude,
+            'longitude': user_assignment.incident.longitude
+        })
+    except Assignment.DoesNotExist:
+        return JsonResponse({
+            'isAssigned': False
+        })
 
-    return render(request, 'mapapp/home.html', context)'''
 
 # mapapp/views.py
 
@@ -138,9 +150,25 @@ def home(request):
     return render(request, 'mapapp/home.html', context)
 
 
-from django.shortcuts import render
-from django.http import JsonResponse
 
+
+
+'''def get_marker(request):
+    category = request.GET.get('category', 'other')
+
+    marker_color_map = {
+        'medical': 'marker-icon-2x-medical.png',
+        'security': 'marker-icon-2x-inc.png',
+        'spill': 'marker-icon-2x-spill.png',
+        'other': 'marker-icon-2x-violet.png'
+    }
+
+    marker_image = marker_color_map.get(category, 'marker-icon-2x-violet.png')
+
+    return JsonResponse({'marker_image': marker_image})'''
+
+from django.http import JsonResponse
+from django.urls import reverse
 
 def get_marker(request):
     category = request.GET.get('category', 'other')
@@ -154,8 +182,10 @@ def get_marker(request):
 
     marker_image = marker_color_map.get(category, 'marker-icon-2x-violet.png')
 
-    return JsonResponse({'marker_image': marker_image})
+    # We provide a full path to the static file
+    marker_image_url = reverse('static', args=[f"mapapp/img/{marker_image}"])
 
+    return JsonResponse({'marker_image': marker_image_url})
 
 # ... [Other views you might have] ...
 
@@ -169,47 +199,10 @@ def indextwo(request):
 def icviews(request):
     return render(request, 'mapapp/map_three.html')
 # memberss sections
-'''
-def login_user(request):
-    user = None  # Initialize user variable
 
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
 
-    if user is not None:
-        login(request, user)
-        return redirect('index')
-    else:
-        messages.success(request, ("There was an error Try again"))
-        #return render(request, 'your_template_name_here.html')  # Return a response even for non-POST requests
-
-def register_user(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            messages.success(request,("Registration Successful"))
-
-    else:
-        form = UserCreationForm()
-
-    return render(request, 'mapapp/register_user.html',
-                  {'form': form,})
-'''
 #text message function #
 # mapapp/views.py
-
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from .models import needHelp, Credential
-from django.views.decorators.csrf import csrf_exempt
-
 
 @csrf_exempt
 def record_incident(request):
@@ -266,10 +259,7 @@ def manuel_manage_incident(request):
     return render(request,'mapapp/incidents.html',{'form':form,'submitted':submitted })
 
 
-'''def status_update(request):
-    credentials_data = Credential.objects.all()
-    context = {'credentials_data': credentials_data}
-    return render(request, 'mapapp/status_update_views.html', context)'''
+
 
   # Make sure to import the model
 
@@ -469,19 +459,37 @@ def incident_report(request):
 
 
 
-'''def credential_count(request):
-    total_responders = Credential.objects.all().count()
-    context = {'total_responders': total_responders}
-    return render(request, 'mapapp/home.html', context)'''
+
+
 #messaging framework
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Message
-from .serializers import MessageSerializer
-from django.shortcuts import render
 
 
+def message_board(request):
+    # Fetch all users
+    all_users = Credential.objects.all()
+
+    # Construct user_messages structure
+    users = []
+    for user in all_users:
+        # Get all messages for the current user
+        user_messages = SimpleMessage.objects.filter(username=user.username)
+
+        # Convert them to a list of dictionaries for easier templates rendering
+        messages = []
+        for msg in user_messages:
+            messages.append({
+                'subject': msg.message[:30],  # Assuming the subject is the first 30 chars of the message
+                'data': msg.message
+            })
+
+        # Append user data and their messages to the users list
+        users.append({
+            'username': user.username,
+            'messages': messages
+        })
+
+    # Render templates with the constructed data
+    return render(request, 'mapapp/message_board.html', {'users': users})
 
 
 class SendMessageAPI(APIView):
@@ -494,44 +502,25 @@ class SendMessageAPI(APIView):
 
 
 
-#ef msg_txt(request):
-#    users = Credential.objects.all()
-#    return render(request, 'msg_txt.html', {'users': users})
-
-
-
-
-def message_board(request):
-    users = Credential.objects.all()
-    print(users)
-    return render(request, 'mapapp/message_board.html', {'users': users})
-
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Message, Credential
-from .serializers import MessageSerializer
 
 
 class ReceiveMessageAPI(APIView):
-
     def post(self, request):
         sender_username = request.data.get('sender')
 
-        # Get the sender Credential object
+        # Check sender existence
         try:
             sender_credential = Credential.objects.get(username=sender_username)
         except Credential.DoesNotExist:
             return Response({"error": "Sender not found"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Get the Command Post Credential object for the receiver
+        # Check receiver existence (Command Post)
         try:
             receiver_credential = Credential.objects.get(username='Command Post')
         except Credential.DoesNotExist:
             return Response({"error": "Receiver (Command Post) not found"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Prepare the data for serialization
+        # Prepare data for serialization
         data = {
             'sender': sender_credential.id,
             'receiver': receiver_credential.id,
@@ -540,22 +529,97 @@ class ReceiveMessageAPI(APIView):
 
         serializer = MessageSerializer(data=data)
 
+        # Save the message if valid
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RecMsgAPI(APIView):
+    def post(self, request):
+        serializer = MessageSerializer(data=request.data)
 
-@csrf_exempt
-def rec_msg(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = MessageSerializer(data=data)
-
+        # Save the message if valid
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+            return Response({'status': 'Message sent successfully!'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    return JsonResponse({"error": "only POST method allowed"}, status=400)
+#SSE SECTION Missing Kid and  Active Shooter
+# myapp/views.py
 
+
+message = "No message"
+
+def event_stream():
+    global message
+    while True:
+        yield f"data: {message}\n\n"
+
+def sse(request):
+    response = StreamingHttpResponse(event_stream(), content_type="text/event-stream")
+    response["Cache-Control"] = "no-cache"
+    return response
+
+@csrf_exempt
+def send_message(request):
+    global message
+    if request.method == "POST":
+        message = "Alert ! Alert ! Alert!\nMissing Child, Description"
+        return JsonResponse({"status": "success"})
+    else:
+        return JsonResponse({"status": "failed"})
+
+#incident Number Generate
+
+
+
+# Helper function to generate a unique incident number
+def generate_incident_number(venue_name):
+    date_now = datetime.now()
+    year_month_day = date_now.strftime("%Y%m%d")
+    # Find the last incident number today for the given venue name
+    latest_incident = Incident.objects.filter(
+        incident_number__startswith=venue_name + year_month_day
+    ).order_by('incident_number').last()
+
+    if latest_incident:
+        # Split by venue name and date, then convert the last section to an integer and add 1
+        last_number = int(latest_incident.incident_number.split(venue_name + year_month_day)[-1])
+        new_incident_number = f"{venue_name}{year_month_day}{last_number + 1:03}"
+    else:
+        # If no incidents today for this venue, start with '001'
+        new_incident_number = f"{venue_name}{year_month_day}001"
+
+    return new_incident_number
+
+
+@csrf_exempt
+def create_incident(request):
+    if request.method == 'POST':
+        venue_id = request.POST.get('venue_id')
+        incident_type = request.POST.get('incident_type')
+
+        try:
+            venue = Venue.objects.get(pk=venue_id)
+        except Venue.DoesNotExist:
+            return JsonResponse({'error': 'Venue not found'}, status=404)
+
+        incident_number = generate_incident_number(venue.VenueName)
+
+        incident = Incident.objects.create(
+            incident_number=incident_number,
+            date=datetime.now(),
+            venue=venue,  # If you have a foreign key to a venue, use this field instead
+            incident_type=incident_type,
+            description=request.POST.get('description', '')  # Assuming you want a description
+        )
+
+        return JsonResponse({
+            'incident_number': incident.incident_number,
+            'incident_type': incident.incident_type
+        }, status=201)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+# Don't forget to set up your URL configuration to include the view

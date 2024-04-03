@@ -109,8 +109,86 @@
   margin-right: 16px;
   font-size: 17px;
 }
+.my-custom-button {
+        margin-top: 10px;
+        /* add other custom styles if needed */
+    }
+,row{
+    display:flex;
+    flew-wrap: nowrap;
+}
+//Popup css
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
 
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
 
+/* The popup form - hidden by default */
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+.form-container input[type=text], .form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
   </style>
 </head>
 <body>
@@ -131,7 +209,7 @@
             <a href="{% url 'status_update' %}" class="btn btn-primary">Status View</a>
             <a href="#" class="btn btn-primary">MED CT</a>
              <a href="{% url 'incidents_view' %}" class="btn btn-primary">Incident Page </a>
-            <a href="#" class="btn btn-primary">Blank</a>
+            <a href="" class="btn btn-primary">ePCR</a>
             {% if user.is_authenticated %}
             <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
             {% else %}
@@ -139,6 +217,12 @@
             {% endif %}
             <a class="btn btn-primary" href="#home">Home</a>
            <a href="{% url 'message_board' %}" class="btn btn-primary">Message Board</a>
+
+            <select name="venue" id="venue">
+  {% for venue in venues %}
+    <option value="{{ venue.id }}">{{ venue.name }}</option>
+  {% endfor %}
+</select>
 
             <input type="text" placeholder="Enter Location.."
  <!-- <a href="#news">News</a>
@@ -269,32 +353,152 @@
 <hr>
 
       <div class="row">
-       <div class="col-sm-3">
-    <div class="well">
-        <h4><center>Total Event Responders</center></h4>
-        <p><center><h4>{{ total_responders }}</h4></center></p>
+    <div class="col-sm-3">
+        <div class="well">
+            <h4><center>Total Event Responders</center></h4>
+            <p><center><h4>{{ total_responders }}</h4></center></p>
+        </div>
     </div>
+
+    <div class="col-sm-3">
+        <div class="well">
+            <h4><center>Incidents Holding</center></h4>
+            <p>Unassigned Incidents: {{ unassigned_incidents_count }}</p>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="well" style="text-align: center;">
+            <h4>Missing Child</h4>
+            <!-- <button id="sendButton">Send Message</button> -->
+            <button onclick="myFunction()" class="btn btn-warning">Missing Kid</button>
+
+        </div>
+    </div>
+           <div id="messages"></div>
+
+
+<!--<button class="open-button" onclick="openForm()">Open Form</button>-->
+
+<div class="form-popup" id="userInputForm">
+  <form action="/action_page.php" class="form-container">
+    <h1><center>Missing Child</center></h1>
+     <label for="Child's Name:"><b>Name</b></label>
+    <input type="text" placeholder="Child's Name:" name="email" required>
+      <label for="Age:"><b>Age</b></label>
+    <input type="text" placeholder="Age:" name="Age" required>
+
+    <label for="Gender"><b>Gender</b></label>
+    <input type="text" placeholder="Gender" name="gender" required>
+
+    <label for="Description"><b>Description</b></label>
+    <input type="text" placeholder="Description" name="desc" required>
+
+<label for="Last Seen"><b>Last Seen</b></label>
+    <input type="text" placeholder="lastseen" name="lseen" required>
+
+    <button onclick="submitDetails()"  class="btn btn-danger" >Submit</button>
+      <button onclick="closeForm()" class="btn btn-primary">Close</button>
+    </form>
 </div>
 
-        <div class="col-sm-3">
-          <div class="well">
-            <h4>Pages</h4>
-            <p>100 Million</p>
-          </div>
+
+    <div class="col-sm-3">
+        <div class="well" style="text-align: center;">
+            <h4>Active Shooter</h4>
+            <!-- <button id="sendButton">Send Message</button> -->
+            <button onclick="myFunction1()" class="btn btn-danger">Active Shooter</button>
+
         </div>
-        <div class="col-sm-3">
-          <div class="well">
-              <h4><center>Incidents Holding</center></h4>
-              <p>Unassigned Incidents: {{ unassigned_incidents_count }}</p>
-          </div>
-        </div>
-        <div class="col-sm-3">
-          <div class="well">
-            <h4>Bounce</h4>
-            <p>30%</p>
-          </div>
-        </div>
-      </div>
+    </div>
+           <div id="messages1"></div>
+
+
+<!--<button class="open-button" onclick="openForm()">Open Form</button>-->
+
+<div class="form-popup" id="activeShooterForm">
+  <form action="/action_page.php" class="form-container">
+    <h1><center>Active Shoother </center></h1>
+     <label for="Confirmed:"><b>Confirmed</b></label>
+    <input type="text" placeholder="Confirmed:" name="email" required>
+      <label for="CasEvac":"><b>CasEvac</b></label>
+    <input type="text" placeholder="CasEvac:" name="Age" required>
+
+    <label for="Location"><b>Location</b></label>
+    <input type="text" placeholder="Location" name="Location" required>
+
+    <label for="Law Enforcement notified"><b>Police Notified</b></label>
+    <input type="text" placeholder="Description" name="desc" required>
+
+<label for="Last Seen"><b>Last Seen</b></label>
+    <input type="text" placeholder="lastseen" name="lseen" required>
+
+    <button onclick="submitDetails()"  class="btn btn-danger" >Submit</button>
+      <button onclick="closeForm()" class="btn btn-primary">Close</button>
+    </form>
+
+</div>
+
+
+             <script type="text/javascript">
+        let url = `ws://${window.location.host}/ws/socket-server/`;
+        const chatSocket = new WebSocket(url);
+
+        chatSocket.onmessage = function(e){
+            let data = JSON.parse(e.data);
+            console.log('Data:', data);
+
+            if(data.type === 'chat'){
+                let messages = document.getElementById('messages');
+                messages.insertAdjacentHTML('beforeend', `<div><p>${data.message}</p></div>`);
+            }
+        };
+
+        let form = document.getElementById('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let message = e.target.message.value;
+            chatSocket.send(JSON.stringify({'message': message}));
+            form.reset();
+        });
+
+        document.getElementById('emergencyButton').addEventListener('click', function() {
+            const emergencyMessage = 'Alert, Alert, Alert yada yada yada';
+            chatSocket.send(JSON.stringify({'message': emergencyMessage}));
+        });
+
+        function myFunction() {
+            document.getElementById("userInputForm").style.display = "block";
+        }
+          function myFunction1() {
+            document.getElementById("activeShooterForm").style.display = "block";
+        }
+        function submitDetails() {
+            let childsName = document.getElementById("childsName").value;
+            let bioGender = document.getElementById("bioGender").value;
+            let childsAge = document.getElementById("childsAge").value;
+            let childsDescription = document.getElementById("childsDescription").value;
+            let lastSeen = document.getElementById("lastSeen").value;
+
+            let message = "Missing Child Alert - " +
+                        "Child's Name: " + childsName +
+                        ", Biological Gender: " + bioGender +
+                        ", Age: " + childsAge +
+                        ", Description: " + childsDescription +
+                        ", Last Seen: " + lastSeen;
+
+            // Send the message through WebSocket
+            chatSocket.send(JSON.stringify({'message': message}));
+            closeForm(); // Close the form after sending the message
+        }
+
+        function closeForm() {
+            document.getElementById("userInputForm").style.display = "none";
+        }
+         function closeForm() {
+            document.getElementById("activeShooterForm").style.display = "none";
+        }
+    </script>
  <div class="col-sm-4">
     <div class="well">
        <form method="post" id="incident-form" action="{% url 'record_incident' %}">
@@ -310,6 +514,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                <!--maueal Incident Assignment-->
                     <tr>
                         <td>
                             <input type="text" name="incident_number" id="incident_number" placeholder="Incident Number">
@@ -346,48 +551,54 @@
          <div class="col-sm-8">
     <div class="well">
         <h1><strong>Text Comm</strong></h1>
+<div>
+    <form id="message_form" method="post" action="{% url 'simplemessageapp:message-list' %}">
+    {% csrf_token %}
+    <div class="input-container">
+        <select name="username" id="logged_in_users">
+            <option value="">None</option>
+            {% for responder in responder_all %}
+            <option value="{{ responder.username }}">{{ responder.username }}</option>
+            {% endfor %}
+        </select>
 
-        <!-- Container for the user dropdown and input area -->
-        <div class="input-container">
-            <!-- Dropdown for all usernames from the Credential database -->
-
-                            <select name="logged_in_users" id="logged_in_users">
-                                <option value="">None</option>
-                                {% for responder in responder_all %}
-                                 <option value="{{ responder.id }}">{{ responder.username }}</option>
-                                {% endfor %}
-                            </select>
-          <!--  <select name="logged_in_users" id="logged_in_users">
-                {% for username in all_users %}
-                    <option value="{{ username }}">{{ username }}</option>
-                {% endfor %}
-            </select> -->
-
-            <!-- Large bordered input area -->
-            <textarea id="message_input" rows="5" maxlength="175" placeholder="Type your message (max 175 characters)"></textarea>
-        </div>
-
-        <!-- Send button -->
-        <button id="send_button">Send</button>
+        <textarea id="message_input" name="message" rows="5" maxlength="175" placeholder="Type your message (max 175 characters)"></textarea>
     </div>
-</div>
+    <!-- Send button -->
+    <button type="submit" id="send_button">Send</button>
+</form>
 
 
-      <div class="row">
-        <div class="col-sm-8">
-          <div class="well">
-            <p>Text</p>
-          </div>
-        </div>
-        <div class="col-sm-4">
-          <div class="well">
-            <p>Text</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
+<script>
+    // Handling form submission with AJAX
+    $('#message_form').on('submit', function(e) {
+        e.preventDefault();
+
+        // Get the form data
+        let formData = $(this).serialize();
+
+        // AJAX request
+        $.ajax({
+            url: "{% url 'simplemessageapp:message-list' %}",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+                // Display the "Message sent" popup
+                alert("Message sent!");
+
+                // Clear the textarea
+                $('#message_input').val('');
+                $('#logged_in_users').val('');
+            },
+            error: function(error) {
+                alert("Error sending message!");
+            }
+        });
+    });
+
+
+</script>
 
 </body>
 </html>

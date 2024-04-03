@@ -216,10 +216,10 @@
 
         function createCustomIcon(options) {
             var colorsList = ['medical', 'inc', 'spill', 'other', 'red', 'green', 'orange', 'yellow', 'purple', 'darkred', 'darkblue', 'darkgreen', 'cadetblue', 'darkpurple', 'white', 'black', 'gray', 'blue', 'violet', 'gold'];
-            var iconUrl = "{% static 'mapapp/img/marker-icon-2x-' %}" + options.markerColor + ".png";
+            var iconUrl = "{% static 'mapapp/mapapp/img/marker-icon-2x-' %}" + options.markerColor + ".png";
 
             if (!colorsList.includes(options.markerColor)) {
-                iconUrl = "{% static 'mapapp/img/marker-icon-2x-gray.png' %}";
+                iconUrl = "{% static 'mapapp/mapapp/img/marker-icon-2x-gray.png' %}";
             }
 
             var icon = L.icon({
@@ -227,7 +227,7 @@
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
                 popupAnchor: [1, -34],
-                shadowUrl: "{% static 'mapapp/img/marker-shadow.png' %}",
+                shadowUrl: "{% static 'mapapp/mapapp/img/marker-shadow.png' %}",
                 shadowSize: [41, 41]
             });
 
