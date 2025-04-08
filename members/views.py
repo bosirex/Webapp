@@ -5,6 +5,9 @@ from .forms import UserLoginForm, RegisterUserForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse
+from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import login_required
+
 
 def login_user(request):
     if request.method == 'POST':
@@ -25,10 +28,7 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request, ('Thank you for logging out'))
-    return redirect('home')
-
-
-
+    return redirect('login_user')
 
 #End of log in logout register function
 def register_user(request):
@@ -40,8 +40,18 @@ def register_user(request):
             password = form.cleaned_data['password1']
             user = authenticate(username=username,password=password)
             login(request,user)
-            messages.success(request('Registration Successful'))
-            return redirect('home')
+            messages.success(request, ('Registration Successful'))
+            return redirect('login_user')
     else:
         form = RegisterUserForm()
     return render(request, 'authenticate/register_user.html', {'form':form,})
+
+
+#@never_cache
+#def home(request):
+#    return render(request, 'mapapp/home.html', {'form':form,})
+
+@never_cache
+@login_required
+def home(request):
+    return render(request, 'mapapp/home.html')

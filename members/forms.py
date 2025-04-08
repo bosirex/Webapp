@@ -23,13 +23,13 @@ class RegisterUserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username','first_name', 'last_name','email', 'password', 'password1')
+        fields = ('username','first_name', 'last_name','email', 'password1', 'password2')
 
     def __init__(self,*arg, **kwargs):
         super(RegisterUserForm,self).__init__(*arg, **kwargs)
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['password1'].widget.attrs['class'] = 'form-control'
-        self.fields['password'].widget.attrs['class'] = 'form-control'
+        self.fields['password2'].widget.attrs['class'] = 'form-control'
 
 from .models import Incidents
 
